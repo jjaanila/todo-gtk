@@ -1,6 +1,5 @@
-from datetime import datetime
-import json
 import uuid
+import json
 
 
 class Storage():
@@ -12,35 +11,42 @@ class Storage():
         self._load()
 
     def _load(self):
-        with open(self.file_path) as json_file:
-            self.state = json.load(json_file)
+        try:
+            with open(self.file_path) as json_file:
+                self.state = json.load(json_file)
+        except (IOError, json.JSONDecodeError):
+            self.state = {
+                "tasks": []
+            }
+        if "tasks" not in self.state or not self.state["tasks"]:
+            self.state["tasks"] = []
 
-    def _save(self, content):
+    def _save(self):
         with open(self.file_path, "w") as json_file:
             return json_file.write(json.dumps(self.state))
 
-    def add_task(self, name, description, is_completed):
+    def add_task(self, name):
         task = {
-            "id": uuid.uuid1(),
+            "id": str(uuid.uuid1()),
             "name": name,
-            "description": description,
-            "is_completed": is_completed,
-            "created_at": datetime.now()
+            "is_completed": False
         }
         self.state["tasks"].append(task)
-        self.save()
+        self._save()
         return task
 
     def remove_task(self, task_id):
         self.state["tasks"] = [
             x for x in self.state["tasks"] if x["id"] != task_id]
-        self.save()
+        self._save()
 
-    def compete_task(self, task_id):
-        for task, index in enumerate(self.state["tasks"]):
-            if task["id"] == task_id:
-                self.state["tasks"][index]["is_completed"] = True
-            return
+    def update_task(self, new_task):
+        for index, task in enumerate(self.state["tasks"]):
+            if task["id"] == new_task["id"]:
+                self.state["tasks"][index] = new_task
+                self._save()
+                return
+
 
     def get_tasks(self):
         return self.state["tasks"] if "tasks" in self.state else []
