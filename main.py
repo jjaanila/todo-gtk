@@ -48,12 +48,14 @@ class MainWindow(Gtk.Window):
         self.new_task_entry = Gtk.Entry()
         self.new_task_entry.connect(
             "activate", self.on_new_task_entry_activated)
-        list_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
         self.create_task_list_box()
+        list_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         list_container.set_margin_top(5)
         list_container.pack_start(self.task_list_box, True, True, 0)
         list_container.set_hexpand(True)
         list_container.set_vexpand(True)
+
         grid = Gtk.Grid()
         grid.attach(new_task_label, 1, 0, 1, 1)
         grid.attach_next_to(
