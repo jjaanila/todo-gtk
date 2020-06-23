@@ -49,4 +49,4 @@ class Storage():
 
 
     def get_tasks(self):
-        return self.state["tasks"] if "tasks" in self.state else []
+        return self.state["tasks"]
